@@ -1,27 +1,28 @@
 extern crate alloc;
 
+pub use ledbetter_macros::ledbetter;
+
 use alloc::{vec, vec::Vec};
 use core::marker::PhantomData;
 
 pub type PixelLocation = (f32, f32);
 
-pub trait PixelAnimation<Params> {
-    fn new(params: &Params, pixel_locs: Vec<Vec<PixelLocation>>) -> Self;
-    fn tick(&mut self, params: &Params);
-    fn render(&self, params: &Params, pixels: &mut Vec<Vec<u32>>);
+pub trait PixelAnimation {
+    type Params;
+    fn new(params: &Self::Params, pixel_locs: Vec<Vec<PixelLocation>>) -> Self;
+    fn tick(&mut self, params: &Self::Params);
+    fn render(&self, params: &Self::Params, pixels: &mut Vec<Vec<u32>>);
 }
 
-pub struct PixelAnimationBuilder<Params, A: PixelAnimation<Params>> {
+pub struct PixelAnimationBuilder<A: PixelAnimation> {
     pixel_locs: Vec<Vec<PixelLocation>>,
-    _params_marker: PhantomData<Params>,
     _a_marker: PhantomData<A>,
 }
 
-impl<Params, A: PixelAnimation<Params>> PixelAnimationBuilder<Params, A> {
+impl<A: PixelAnimation> PixelAnimationBuilder<A> {
     pub fn new() -> Self {
         PixelAnimationBuilder {
             pixel_locs: Vec::new(),
-            _params_marker: PhantomData::default(),
             _a_marker: PhantomData::default(),
         }
     }
@@ -38,7 +39,7 @@ impl<Params, A: PixelAnimation<Params>> PixelAnimationBuilder<Params, A> {
         self.pixel_locs[strip_idx][pixel_idx] = (x, y);
     }
 
-    pub fn build(self, params: &Params) -> (A, Vec<Vec<u32>>) {
+    pub fn build(self, params: &A::Params) -> (A, Vec<Vec<u32>>) {
         let pixels = self.pixel_locs.iter()
             .map(|strip_locs| vec![0; strip_locs.len()])
             .collect();
@@ -47,24 +48,25 @@ impl<Params, A: PixelAnimation<Params>> PixelAnimationBuilder<Params, A> {
     }
 }
 
-#[derive(Default)]
-pub struct PixelAnimationGlobal<Params, A: PixelAnimation<Params>>(
-    Option<PixelAnimationBuildStage<Params, A>>
-);
+pub struct PixelAnimationGlobal<A: PixelAnimation>(pub Option<PixelAnimationBuildStage<A>>);
 
-pub enum PixelAnimationBuildStage<Params, A: PixelAnimation<Params>> {
-    Building { params: Params, builder: PixelAnimationBuilder<Params, A> },
-    Built { params: Params, animation: A, pixels: Vec<Vec<u32>> },
+pub enum PixelAnimationBuildStage<A: PixelAnimation> {
+    Building { params: A::Params, builder: PixelAnimationBuilder<A> },
+    Built { params: A::Params, animation: A, pixels: Vec<Vec<u32>> },
 }
 
-impl<Params, A: PixelAnimation<Params>> PixelAnimationGlobal<Params, A>
-    where Params: Default
+impl<A: PixelAnimation> PixelAnimationGlobal<A>
+    where A::Params: Default
 {
+    pub fn new() -> Self {
+        PixelAnimationGlobal(None)
+    }
+
     #[inline]
     fn init(&mut self) {
         use PixelAnimationBuildStage::*;
         if let None = self.0 {
-            let params = Params::default();
+            let params = A::Params::default();
             let builder = PixelAnimationBuilder::new();
             self.0 = Some(Building { params, builder });
         }
@@ -133,7 +135,7 @@ impl<Params, A: PixelAnimation<Params>> PixelAnimationGlobal<Params, A>
         }
     }
 
-    pub fn params_mut(&mut self) -> &mut Params {
+    pub fn params_mut(&mut self) -> &mut A::Params {
         use PixelAnimationBuildStage::*;
         self.init();
         match self.0 {

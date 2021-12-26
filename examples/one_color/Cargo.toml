@@ -1,0 +1,11 @@
+[package]
+name = "one_color"
+version = "0.1.0"
+edition = "2018"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+ledbetter = { path = "../.." }
+wee_alloc = "0.4.5"
