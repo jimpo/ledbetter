@@ -2,8 +2,8 @@
 
 LEDBetter Lights is a system for programming [addressable LED strips](https://learn.adafruit.com/adafruit-neopixel-uberguide) with WebAssembly. This consists of three main components:
 
-- [Firmware](/jimpo/ledbetter-firmware) for a driver running on a Raspberry Pi that accepts LED animations compiled as WebAssembly programs and displays it on WS2812B LED addressable strips
-- A [web application](/jimpo/ledbetter-app) for controlling the drivers and simulating the animations in-browser
+- [Firmware](https://github.com/jimpo/ledbetter-firmware) for a driver running on a Raspberry Pi that accepts LED animations compiled as WebAssembly programs and displays it on WS2812B LED addressable strips
+- A [web application](https://github.com/jimpo/ledbetter-app) for controlling the drivers and simulating the animations in-browser
 - A Rust embedded DSL in this repo for writing animations
 
 This is a personal project and as such is incomplete, buggy, and built with some admittedly weird design decisions so that I could use certain technologies.
