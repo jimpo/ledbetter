@@ -121,7 +121,6 @@ impl LedbetterVisitor {
 				let param_ty = ty.into_token_stream();
 				let getter_name = format_ident!("get_param_{}", name);
 				let setter_name = format_ident!("set_param_{}", name);
-				println!("{} {}", getter_name, setter_name);
 				tokens.extend(quote! {
 					#[no_mangle]
 					pub extern "C" fn #getter_name() -> #param_ty {

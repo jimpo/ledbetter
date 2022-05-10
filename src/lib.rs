@@ -9,7 +9,7 @@ pub type PixelLocation = (f32, f32);
 
 pub trait PixelAnimation {
     type Params;
-    fn new(params: &Self::Params, pixel_locs: Vec<Vec<PixelLocation>>) -> Self;
+    fn new(pixel_locs: Vec<Vec<PixelLocation>>) -> Self;
     fn tick(&mut self, params: &Self::Params);
     fn render(&self, params: &Self::Params, pixels: &mut Vec<Vec<u32>>);
 }
@@ -39,11 +39,11 @@ impl<A: PixelAnimation> PixelAnimationBuilder<A> {
         self.pixel_locs[strip_idx][pixel_idx] = (x, y);
     }
 
-    pub fn build(self, params: &A::Params) -> (A, Vec<Vec<u32>>) {
+    pub fn build(self) -> (A, Vec<Vec<u32>>) {
         let pixels = self.pixel_locs.iter()
             .map(|strip_locs| vec![0; strip_locs.len()])
             .collect();
-        let animation = A::new(params, self.pixel_locs);
+        let animation = A::new(self.pixel_locs);
         (animation, pixels)
     }
 }
@@ -108,7 +108,7 @@ impl<A: PixelAnimation> PixelAnimationGlobal<A>
         self.init();
         match self.0.take() {
             Some(Building { params, builder }) => {
-                let (animation, pixels) = builder.build(&params);
+                let (animation, pixels) = builder.build();
                 self.0 = Some(Built { params, animation, pixels });
             }
             Some(Built { .. }) => panic!("initLayoutDone called after initLayoutDone"),
