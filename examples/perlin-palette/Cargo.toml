@@ -1,5 +1,5 @@
 [package]
-name = "one_color"
+name = "perlin-palette"
 version = "0.1.0"
 edition = "2018"
 
@@ -8,6 +8,11 @@ crate-type = ["cdylib"]
 
 [dependencies]
 ledbetter = { path = "../.." }
+noise = "0.7.0"
+num-traits = "0.2.14"
+palette = "0.6.0"
+getrandom = { version = "0.2.3", features = ["custom"] }
+rand = "0.8.4"
 wee_alloc = "0.4.5"
 
 [profile.release]

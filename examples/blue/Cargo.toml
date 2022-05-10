@@ -1,5 +1,5 @@
 [package]
-name = "one_color"
+name = "blue"
 version = "0.1.0"
 edition = "2018"
 
@@ -8,6 +8,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 ledbetter = { path = "../.." }
+palette = "0.6.0"
 wee_alloc = "0.4.5"
 
 [profile.release]

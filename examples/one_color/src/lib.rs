@@ -18,14 +18,14 @@ mod main {
 	impl PixelAnimation for OneColor {
 		type Params = Params;
 
-		fn new(_params: &Params, _pixel_locs: Vec<Vec<PixelLocation>>) -> Self {
+		fn new(_pixel_locs: Vec<Vec<PixelLocation>>) -> Self {
 			OneColor
 		}
 
-		fn tick(&mut self, _params: &Params) {
+		fn tick(&mut self, _params: &Self::Params) {
 		}
 
-		fn render(&self, params: &Params, pixels: &mut Vec<Vec<u32>>) {
+		fn render(&self, params: &Self::Params, pixels: &mut Vec<Vec<u32>>) {
 			let red = params.red.min(255);
 			let grn = params.red.min(255);
 			let blu = params.red.min(255);
